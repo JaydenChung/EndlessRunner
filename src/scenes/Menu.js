@@ -1,39 +1,43 @@
-class Menu extends Phaser.Scene{
+class Menu extends Phaser.Scene {
     constructor() {
-        super("menuScene")
+      super("menuScene");
     }
-    create(){
-        //create menu
-        let menuConfig = {
-        fontFamily: 'Courier',
-        fontSize: '28px',
-        backgroundColor: '#F3B141',
-        color: '#843605',
-        align: 'right',
-        padding: {
-            top: 5,
-            bottom: 5,
-        },
-        fixedWidth: 0
-        //display timer
-
+  
+    preload() {
+      // Load the menu image
+      this.load.image("menuImage", "assets/menu.png");
     }
-        //show menu text
-        this.add.text(game.config.width/2, game.config.height/2 - borderUISize - borderPadding, 'ENDLESS RUNNER', menuConfig).setOrigin(0.5);
-        menuConfig.backgroundColor = '#00FF00';
-        menuConfig.color = '#000';
-    }
-    update(){
-        // if (Phaser.Input.Keyboard.JustDown(keyLEFT)){
-        //     game.settings = {
-        //         //bike speed
-        //         //car speed
-        //         //score
-        //         //timer
-        //     }
-        //     this.sound.play('sfx_select')
-        //     this.scene.start('playScene')   
-        // }
+  
+    create() {
+      // Display the menu image
+      const menuImage = this.add.image(0, 0, "menuImage").setOrigin(0, 0);
+  
+      // Scale the menu image to fit the screen
+      menuImage.displayWidth = this.game.config.width;
+      menuImage.displayHeight = this.game.config.height;
+  
+      // Add text instructions
+      this.add.text(this.game.config.width - 20, 20, 'How to Play', {
+        fontSize: '32px',
+        fill: '#fff',
+        align: 'right'
+      }).setOrigin(1, 0);
+  
+      this.add.text(this.game.config.width - 20, 70, 'Use the arrow keys to move', {
+        fontSize: '24px',
+        fill: '#fff',
+        align: 'right'
+      }).setOrigin(1, 0);
+  
+      this.add.text(this.game.config.width - 20, 120, 'Press the spacebar to shoot', {
+        fontSize: '24px',
+        fill: '#fff',
+        align: 'right'
+      }).setOrigin(1, 0);
+  
+      // Start the game on spacebar press
+      this.input.keyboard.on("keydown-SPACE", () => {
+        this.scene.start("playScene");
+      });
     }
 }
-

@@ -1,37 +1,47 @@
-class Play extends Phaser.Scene{
+class Play extends Phaser.Scene {
     constructor() {
-        super("playScene")
+        super("playScene");
     }
+
+    preload() {
+        this.load.image("background", "assets/road.png");
+        this.load.image("player", "assets/car_.png");
+    }
+
     create() {
-        // this.addEventListener.text(20, 20, "Endless Runner Play")
-        this.map = this.add.image(0, 0, 'map').setOrigin(0)
+        this.road = this.add.tileSprite(0, 0, config.width, config.height, "background");
+        this.road.setOrigin(0, 0);
 
-        let scaleX = this.cameras.main.width / this.map.width;
-        let scaleY = this.cameras.main.height / this.map.height;
+        // Create player and set up physics
+        this.player = this.physics.add.sprite(config.width / 2, config.height - 100, "player");
+        this.player.setCollideWorldBounds(true);
 
-        // Use the smaller of the two scale factors to scale the image
-        let scale = Math.min(scaleX, scaleY);
+        // Set the camera to follow the player
+        this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
 
-        // Scale the map image
-        this.map.setScale(scale);
+        // Define controls
+        this.cursors = this.input.keyboard.createCursorKeys();
 
-         // Optionally, you might want to center the image if it doesn't take up the full screen
-         if (this.map.displayWidth < this.cameras.main.width) {
-            this.map.x = (this.cameras.main.width - this.map.displayWidth) / 2;
-        }
-        if (this.map.displayHeight < this.cameras.main.height) {
-            this.map.y = (this.cameras.main.height - this.map.displayHeight) / 2;
-        }
-
-        //create player car parameters(scene, x, y, key, frame, direction)
-        this.car = new Car(this, 200, 150, 'player', 0, 'up')
-        
+        // Movement speed constants
+        this.horizontalSpeed = 200;
+        this.verticalSpeed = 300;
     }
 
-    preload(){
-        //load audio here 4 at least 
-        // this.preload.audio('')
+    update(time, delta) {
+        // Move the road and player to create the endless effect
+        this.road.tilePositionY -= this.verticalSpeed * delta * 0.001;
+        this.player.y -= this.verticalSpeed * delta * 0.001;
 
+        // Smooth left and right movement
+        if (this.cursors.left.isDown) {
+            this.player.setVelocityX(-this.horizontalSpeed);
+        } else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(this.horizontalSpeed);
+        } else {
+            this.player.setVelocityX(0);
+        }
+
+        // Update the camera position if needed to keep the player in view
+        this.cameras.main.scrollY = this.player.y - config.height + 100;
     }
-
 }
