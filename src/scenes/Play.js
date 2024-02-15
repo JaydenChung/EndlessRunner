@@ -46,6 +46,10 @@ class Play extends Phaser.Scene {
     // Spawn obstacles
         this.spawnObstacles();
         
+    //initialize score 
+    this.score = 0;
+    this.highScore = parseInt(localStorage.getItem("highScore")) || 0;
+    this.scoreText = this.add.text(16, 16, `Score: ${this.score} High Score: ${this.highScore}`, { fontSize: '32px', fill: '#fff' });
     }
 
     update(time, delta) {
@@ -84,6 +88,8 @@ class Play extends Phaser.Scene {
             this.physics.add.collider(this.player, this.obstacles, this.handleCollision, null, this);
         }
 
+        //increase score
+        this.increaseScore() 
     }
 
 //spawn obstacles function
@@ -111,18 +117,28 @@ class Play extends Phaser.Scene {
         });
     }
 
-//game over function222
-    gameOver(){
-        this.isgameOver = true;
-        this.obstacleSpawnTimer.paused = true;
-        this.player.setTint(0xff0000);
+    handleCollision(){
+        // this.gameActive = false;
+
+        // if(this.obstacleSpawnTimer){
+        //     this.obstacleSpawnTimer.remove();
+        // }
+        this.gameOver()
+        this.scene.start("gameOverScene");
     }
 
-    handleCollision(){
-        this.gameActive = false;
-
-        if(this.obstacleSpawnTimer){
-            this.obstacleSpawnTimer.remove();
-        }
+    increaseScore() {
+        this.score += 10;
+        this.scoreText.setText(`Score: ${this.score} High Score: ${this.highScore}`);
+      }
+    gameOver(){
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem("highScore", this.highScore); // Save high score to localStorage
+          }
+      
+          // Display high score and score
+          this.scoreText.setText(`Score: ${this.score} High Score: ${this.highScore}`);
+      
     }
 }
