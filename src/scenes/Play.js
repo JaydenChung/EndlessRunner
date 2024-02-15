@@ -161,7 +161,7 @@ class Play extends Phaser.Scene {
                 const randomSpeed = Phaser.Math.Between(150, 500);
                 obstacle.setVelocityY(randomSpeed);
 
-                obstacle.setScale(1.4, 1);
+                obstacle.setScale(1.43, 1);
     
                 // Set a timer for when the obstacle should stop moving
                 obstacle.setData('stopTime', Phaser.Math.Between(2000, 5000));
