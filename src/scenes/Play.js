@@ -50,6 +50,13 @@ class Play extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('caranim', {start: 10, end: 20}),
         })
 
+        this.anims.create({
+            key:"idle",
+            framerate: 8,
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('caranim', {start: 21, end: 32}),
+        })
+
 
         // Define controls
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -100,6 +107,8 @@ class Play extends Phaser.Scene {
                 // this.player.anims.play("turn-right", true);
             } else {
                 this.player.setVelocityX(0);
+                //PLAYER ANIMATION FOR IDLE
+                // this.player.anims.play("idle", true);
             }
             this.obstacles.getChildren().forEach(obstacle => {
                 // Decrease the timer
