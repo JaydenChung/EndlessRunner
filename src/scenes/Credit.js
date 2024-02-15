@@ -29,7 +29,7 @@ class Credit extends Phaser.Scene{
 
         let credit = this.add.text(this.game.config.width/1.8, this.game.config.height/1.8, 
         'Credits:\n\n Car Sprite from senderin: https://senderin.itch.io/car \n\n All sound effects and music found on https://opengameart.org/ \n\n Artwork done by Jayden Chung on procreate\n\n Programming done by Jayden Chung\n\n',{
-            fontSize: '12px',
+            fontSize: '20px',
             color: '#fff',
             backgroundColor: '#000000',
         }).setOrigin(0.5)
