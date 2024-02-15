@@ -1,6 +1,7 @@
 class Play extends Phaser.Scene {
     constructor() {
         super("playScene");
+        this.gameActive = true;
     }
 
     preload() {
@@ -19,7 +20,9 @@ class Play extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
 
         //make player bigger
-        this.player.setScale(1.5)
+        this.player.setScale(1.4)
+        //change player hitbox
+        this.player.body.setSize(60, 75);
 
 
         // Define controls
@@ -37,7 +40,7 @@ class Play extends Phaser.Scene {
             this.laneWidth * 2.5
         ];
 
-         // Initialize the obstacles group without initial members
+         // add physics to obstacles-=[]
         this.obstacles = this.physics.add.group();
 
     // Spawn obstacles
@@ -47,43 +50,47 @@ class Play extends Phaser.Scene {
 
     update(time, delta) {
         // Scroll the background
-        this.road.tilePositionY -= 5;
-        
+        if (this.gameActive){
 
-        // Smooth left and right movement
-        if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-this.horizontalSpeed);
-        } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(this.horizontalSpeed);
-        } else {
-            this.player.setVelocityX(0);
-        }
-        this.obstacles.getChildren().forEach(obstacle => {
-            // Decrease the timer
-            obstacle.data.values.stopTime -= delta;
-    
-            // Check if it's time to stop
-            if (obstacle.data.values.stopTime <= 0 && !obstacle.data.values.isStopped) {
-                obstacle.setVelocityY(0); // Stop the obstacle by setting its velocity to 0
-                obstacle.setData('isStopped', true);
-    
-                // Set a short duration for the obstacle to stay stopped
-                this.time.delayedCall(Phaser.Math.Between(500, 1000), () => {
-                    // After the short stop, resume the original random speed
-                    obstacle.setVelocityY(Phaser.Math.Between(150, 300));
-                    obstacle.setData('isStopped', false);
-                    // Reset the timer for the next stop
-                    obstacle.setData('stopTime', Phaser.Math.Between(2000, 5000));
-                }, null, this);
+            this.road.tilePositionY -= 5;
+            // Smooth left and right movement
+            if (this.cursors.left.isDown) {
+                this.player.setVelocityX(-this.horizontalSpeed);
+            } else if (this.cursors.right.isDown) {
+                this.player.setVelocityX(this.horizontalSpeed);
+            } else {
+                this.player.setVelocityX(0);
             }
-        });
-    }    
+            this.obstacles.getChildren().forEach(obstacle => {
+                // Decrease the timer
+                obstacle.data.values.stopTime -= delta;
+        
+                // Check if it's time to stop
+                if (obstacle.data.values.stopTime <= 0 && !obstacle.data.values.isStopped) {
+                    obstacle.setVelocityY(0); // Stop the obstacle by setting its velocity to 0
+                    obstacle.setData('isStopped', true);
+        
+                    // Set a short duration for the obstacle to stay stopped
+                    this.time.delayedCall(Phaser.Math.Between(500, 1000), () => {
+                        // After the short stop, resume the original random speed
+                        obstacle.setVelocityY(Phaser.Math.Between(150, 400));
+                        obstacle.setData('isStopped', false);
+                        // Reset the timer for the next stop
+                        obstacle.setData('stopTime', Phaser.Math.Between(2000, 3000));
+                    }, null, this);
+                }
+            });
+            //add collider for player and enemy
+            this.physics.add.collider(this.player, this.obstacles, this.handleCollision, null, this);
+        }
 
+    }
 
+//spawn obstacles function
     spawnObstacles() {
         // Set up obstacle spawn timer
         this.obstacleSpawnTimer = this.time.addEvent({
-            delay: Phaser.Math.Between(1000, 5000), // Randomize the delay for each spawn
+            delay: Phaser.Math.Between(2000, 4000), // Randomize the delay for each spawn
             callback: () => {
                 // Choose a random lane
                 const laneIndex = Phaser.Math.Between(0, this.lanes.length - 1);
@@ -102,5 +109,20 @@ class Play extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+    }
+
+//game over function222
+    gameOver(){
+        this.isgameOver = true;
+        this.obstacleSpawnTimer.paused = true;
+        this.player.setTint(0xff0000);
+    }
+
+    handleCollision(){
+        this.gameActive = false;
+
+        if(this.obstacleSpawnTimer){
+            this.obstacleSpawnTimer.remove();
+        }
     }
 }
