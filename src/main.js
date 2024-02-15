@@ -10,6 +10,9 @@ var config = {
             debug: true
         }
     },
-    scene: [Play]
+    scene: [Menu, Play, Gameover, Credit] 
 }
 var game = new Phaser.Game(config)
+
+let keyR;
+let keyC;

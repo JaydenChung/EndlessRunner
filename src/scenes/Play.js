@@ -8,7 +8,18 @@ class Play extends Phaser.Scene {
         this.load.image("background", "assets/road_resized.png");
         this.load.image("player", "assets/car_.png");
         this.load.image("enemy", "assets/enemy.png");
-        this.load.image("obstacle", "assets/obstacle.png")
+        this.load.image("obstacle", "assets/obstacle.png");
+        this.load.spritesheet("caranim", "assets/car.png", {
+            frameWidth: 200,
+            frameHeight: 76,
+        });
+
+        //load sounds
+        this.load.audio("EndMusic", "assets/gameover.mp3")
+        this.load.audio("bgMusic", "assets/bgMusic.mp3")
+        this.load.audio("rev", "assets/rev.mp3")
+        // this.MenuMusic.stop()
+
     }
 
     create() {
@@ -23,6 +34,14 @@ class Play extends Phaser.Scene {
         this.player.setScale(1.4)
         //change player hitbox
         this.player.body.setSize(60, 75);
+
+        //create player animation
+        this.anims.create({
+            key:"turn-left",
+            framerate: 1,
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('caranim', {start: 0, end: 1}),
+        })
 
 
         // Define controls
@@ -50,6 +69,12 @@ class Play extends Phaser.Scene {
     this.score = 0;
     this.highScore = parseInt(localStorage.getItem("highScore")) || 0;
     this.scoreText = this.add.text(16, 16, `Score: ${this.score} High Score: ${this.highScore}`, { fontSize: '32px', fill: '#fff' });
+
+    //create audio
+    this.EndMusic = this.sound.add("EndMusic")
+    this.rev = this.sound.add("rev")
+    this.bgMusic = this.sound.add("bgMusic")
+    this.bgMusic.play({ loop: true });
     }
 
     update(time, delta) {
@@ -60,6 +85,7 @@ class Play extends Phaser.Scene {
             // Smooth left and right movement
             if (this.cursors.left.isDown) {
                 this.player.setVelocityX(-this.horizontalSpeed);
+                // this.player.anims.play("turn-left", true);
             } else if (this.cursors.right.isDown) {
                 this.player.setVelocityX(this.horizontalSpeed);
             } else {
@@ -73,6 +99,7 @@ class Play extends Phaser.Scene {
                 if (obstacle.data.values.stopTime <= 0 && !obstacle.data.values.isStopped) {
                     obstacle.setVelocityY(0); // Stop the obstacle by setting its velocity to 0
                     obstacle.setData('isStopped', true);
+                    this.rev.play()
         
                     // Set a short duration for the obstacle to stay stopped
                     this.time.delayedCall(Phaser.Math.Between(500, 1000), () => {
@@ -118,11 +145,8 @@ class Play extends Phaser.Scene {
     }
 
     handleCollision(){
-        // this.gameActive = false;
-
-        // if(this.obstacleSpawnTimer){
-        //     this.obstacleSpawnTimer.remove();
-        // }
+        this.bgMusic.stop()
+        this.EndMusic.play();
         this.gameOver()
         this.scene.start("gameOverScene");
     }
