@@ -38,9 +38,16 @@ class Play extends Phaser.Scene {
         //create player animation
         this.anims.create({
             key:"turn-left",
-            framerate: 1,
+            framerate: 8,
             repeat: -1,
-            frames: this.anims.generateFrameNumbers('caranim', {start: 0, end: 1}),
+            frames: this.anims.generateFrameNumbers('caranim', {start: 0, end: 10}),
+        })
+
+        this.anims.create({
+            key:"turn-right",
+            framerate: 8,
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('caranim', {start: 10, end: 20}),
         })
 
 
@@ -85,9 +92,12 @@ class Play extends Phaser.Scene {
             // Smooth left and right movement
             if (this.cursors.left.isDown) {
                 this.player.setVelocityX(-this.horizontalSpeed);
+                //PLAYER ANIMATION FOR LEFT
                 // this.player.anims.play("turn-left", true);
             } else if (this.cursors.right.isDown) {
                 this.player.setVelocityX(this.horizontalSpeed);
+                //PLAYER ANIMATION FOR RIGHT
+                // this.player.anims.play("turn-right", true);
             } else {
                 this.player.setVelocityX(0);
             }
