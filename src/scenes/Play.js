@@ -118,7 +118,10 @@ class Play extends Phaser.Scene {
                 if (obstacle.data.values.stopTime <= 0 && !obstacle.data.values.isStopped) {
                     obstacle.setVelocityY(0); // Stop the obstacle by setting its velocity to 0
                     obstacle.setData('isStopped', true);
-                    this.rev.play()
+                    
+                    if (obstacle.y >= 0 && obstacle.y <= this.game.config.height) {
+                        this.rev.play();
+                    }
         
                     // Set a short duration for the obstacle to stay stopped
                     this.time.delayedCall(Phaser.Math.Between(500, 1000), () => {
@@ -157,6 +160,8 @@ class Play extends Phaser.Scene {
                 // Set a timer for when the obstacle should stop moving
                 obstacle.setData('stopTime', Phaser.Math.Between(2000, 5000));
                 obstacle.setData('isStopped', false);
+                //delete obstacle
+                
             },
             callbackScope: this,
             loop: true
