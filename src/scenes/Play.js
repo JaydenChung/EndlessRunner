@@ -31,9 +31,10 @@ class Play extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
 
         //make player bigger
-        this.player.setScale(1.4)
+        this.player.setScale(1.8)
         //change player hitbox
         this.player.body.setSize(60, 75);
+
 
         //create player animation
         this.anims.create({
@@ -62,7 +63,7 @@ class Play extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // Movement speed constants
-        this.horizontalSpeed = 200;
+        this.horizontalSpeed = 400;
 
 
         // Define lanes for obstacle spawning
@@ -135,6 +136,9 @@ class Play extends Phaser.Scene {
             });
             //add collider for player and enemy
             this.physics.add.collider(this.player, this.obstacles, this.handleCollision, null, this);
+            this.physics.add.collider(this.obstacles, this.obstacles, this.handleObstacleCollision, null, this);
+
+            
         }
 
         //increase score
@@ -145,7 +149,7 @@ class Play extends Phaser.Scene {
     spawnObstacles() {
         // Set up obstacle spawn timer
         this.obstacleSpawnTimer = this.time.addEvent({
-            delay: Phaser.Math.Between(2000, 4000), // Randomize the delay for each spawn
+            delay: Phaser.Math.Between(1000, 2000), // Randomize the delay for each spawn
             callback: () => {
                 // Choose a random lane
                 const laneIndex = Phaser.Math.Between(0, this.lanes.length - 1);
@@ -154,8 +158,10 @@ class Play extends Phaser.Scene {
                 // Create an obstacle at the chosen lane
                 const obstacle = this.obstacles.create(laneX, 0, 'enemy');
                 // Set a random velocity for the obstacle
-                const randomSpeed = Phaser.Math.Between(150, 400);
+                const randomSpeed = Phaser.Math.Between(150, 500);
                 obstacle.setVelocityY(randomSpeed);
+
+                obstacle.setScale(1.4, 1);
     
                 // Set a timer for when the obstacle should stop moving
                 obstacle.setData('stopTime', Phaser.Math.Between(2000, 5000));
@@ -173,6 +179,15 @@ class Play extends Phaser.Scene {
         this.EndMusic.play();
         this.gameOver()
         this.scene.start("gameOverScene");
+    }
+    handleObstacleCollision(obstacle1, obstacle2) {
+        // Stop both obstacles
+        obstacle1.setVelocityY(250);
+        obstacle2.setVelocityY(250);
+        
+        // Optional: Set some data to indicate they're stopped so you can handle them appropriately elsewhere
+        obstacle1.setData('isStopped', true);
+        obstacle2.setData('isStopped', true);
     }
 
     increaseScore() {
